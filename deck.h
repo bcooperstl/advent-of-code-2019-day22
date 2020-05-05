@@ -7,4 +7,21 @@ void cut_n_card(int * to, int * from, int num_to_cut, int num_cards);
 void deal_increment_n(int * to, int * from, int num_increment, int num_cards);
 void print(int * cards, int num_cards);
 
+#define OP_DEAL_NEW 1
+#define OP_CUT 2
+#define OP_DEAL_INCREMENT 3
+
+struct operation{
+    int op;
+    int num;
+};
+
+typedef struct operation operation;
+
+long long int getSourceDealNew(long long int dest, long long int num_cards);
+long long int getSourceCut(long long int dest, long long int num_cut_cards, long long int num_cards);
+long long int getSourceDealIncrement(long long int dest, long long int num_increment_cards, long long int num_cards);
+
+long long int getSource(long long int dest, opeartion op, long long int num_cards);
+
 #endif
