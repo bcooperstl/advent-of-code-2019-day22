@@ -17,18 +17,18 @@ int main (int argc, char * argv[])
     long long int source[MAX_STEPS];
     
     long long int num_cards;
-    long long int target_card;
+    long long int target_position;
     long long int num_deals;
     
     if (argc != 5)
     {
-        fprintf(stderr, "Usage: %s filename num_cards target_card num_deals\n", argv[0]);
+        fprintf(stderr, "Usage: %s filename num_cards target_position num_deals\n", argv[0]);
         exit(1);
     }
     
-    num_cards=strtoll(argv[2]);
-    target_card=strtoll(argv[3]);
-    num_deals=strtoll(argv[4]);
+    num_cards=strtoll(argv[2], NULL, 10);
+    target_position=strtoll(argv[3], NULL, 10);
+    num_deals=strtoll(argv[4], NULL, 10);
     
     fprintf(stderr, "Opening file %s\n", argv[1]);
     
@@ -72,20 +72,14 @@ int main (int argc, char * argv[])
     
     fclose(infile);
     
-    source[operation_position]=target_card;
+    source[operation_position]=target_position;
     
     for (int i=operation_position-1; i>=0; i--)
     {
-        source[i]=getSource(source[i+1], operation[i]);
-    }
-        
-    print(current, num_cards);
-    
-    for (int i=0; i<num_cards; i++)
-    {
-        if (current[i]==2019)
-            printf("Position %d has value 2019\n", i);
+        source[i]=getSource(source[i+1], operations[i], num_cards);
     }
     
+    printf("The source for %lld comes from %lld\n", target_position, source[0]);
+            
     return 0;
 }

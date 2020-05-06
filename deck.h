@@ -22,6 +22,6 @@ long long int getSourceDealNew(long long int dest, long long int num_cards);
 long long int getSourceCut(long long int dest, long long int num_cut_cards, long long int num_cards);
 long long int getSourceDealIncrement(long long int dest, long long int num_increment_cards, long long int num_cards);
 
-long long int getSource(long long int dest, opeartion op, long long int num_cards);
+long long int getSource(long long int dest, operation op, long long int num_cards);
 
 #endif

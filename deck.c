@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "deck.h"
 
@@ -36,7 +37,7 @@ void cut_n_card(int * to, int * from, int num_to_cut, int num_cards)
 void deal_increment_n(int * to, int * from, int num_increment, int num_cards)
 {
     for (int i=0; i<num_cards; i++)
-        to[(num_increment*i)%num_cards]=from[i];        
+        to[(num_increment*i)%num_cards]=from[i];
 }
 
 void print(int * cards, int num_cards)
@@ -78,27 +79,59 @@ long long int getSourceCut(long long int dest, long long int num_cut_cards, long
     }
     else
     {
-        long long int switch_location=num_to_cut*-1ll; // that's negative 1 as a long long
+        long long int switch_location=num_cut_cards*-1ll; // that's negative 1 as a long long
         if (dest >= switch_location)
             return dest-switch_location; // destination of 7 returns 7-4=3
         else
-            return num_cards+num_cut_cards+dest // destination of 1 returns 10+-4+1=7
+            return num_cards+num_cut_cards+dest; // destination of 1 returns 10+-4+1=7
     }
 }
 
-long long int getSourceDealIncrement(long long int dest, int num_increment_cards, long long int num_cards)
+long long int getSourceDealIncrement(long long int dest, long long int num_increment_cards, long long int num_cards)
 {
+    // num_increment_cards=3, num_cards=10
+    // 0 1 2 3 4 5 6 7 8 9
+    // increment 3
+    // 0 7 4 1 8 5 2 9 6 3   10%3=1 (num cards % num_increment_cards)
+    // increment 7
+    // 0 3 6 9 2 5 8 1 4 7   10%7=3
+    int remainder_per_row=num_cards%num_increment_cards;
+    long long int pos=0;
+    long long int used=0;
     
+    for (int i=0; i<num_increment_cards; i++)
+    {
+        if ((dest-pos)%num_increment_cards == 0) // in the row
+        {
+            used+=((dest-pos)/num_increment_cards);
+            break;
+        }
+        else
+        {
+            used+=(((num_cards-pos)/num_increment_cards)+1);
+            pos=num_increment_cards-((num_cards-pos)%num_increment_cards);
+        }
+    }
+    
+    // for increment 3. searching for what goes to 8
+    // used: 4 6 
+    // pos:  2 
+    
+    // for increment 7. searching for what goes to 8
+    // used: 2 3 4 
+    // pos:  4 1 
+    
+    return used;
 }
 
-long long int getSource(long long int dest, opeartion op, long long int num_cards)
+long long int getSource(long long int dest, operation op, long long int num_cards)
 {
     if (op.op==OP_DEAL_NEW)
         return getSourceDealNew(dest, num_cards);
     if (op.op==OP_CUT)
         return getSourceCut(dest, op.num, num_cards);
     if (op.op==OP_DEAL_INCREMENT)
-        return getSourceDealIncrement(dest, op.num, nu_cards);
+        return getSourceDealIncrement(dest, op.num, num_cards);
     fprintf(stderr, "Invalid operation %d\n", op.op);
     exit(1);
 }
