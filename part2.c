@@ -5,6 +5,7 @@
 #include "deck.h"
 
 #define MAX_STEPS 256
+#define MAX_HISTORY 100000
 
 int main (int argc, char * argv[])
 {
@@ -19,6 +20,8 @@ int main (int argc, char * argv[])
     long long int num_cards;
     long long int target_position;
     long long int num_deals;
+    long long int repeat_counter=0;
+    long long int prior;
     
     if (argc != 5)
     {
@@ -72,14 +75,26 @@ int main (int argc, char * argv[])
     
     fclose(infile);
     
-    source[operation_position]=target_position;
     
-    for (int i=operation_position-1; i>=0; i--)
-    {
-        source[i]=getSource(source[i+1], operations[i], num_cards);
+    prior=target_position;
+    
+    for (int j=0; j<num_deals; j++)
+    {    
+        if (j%100000==0)
+            printf("iteration %d\n", j);
+        source[operation_position]=prior;
+        for (int i=operation_position-1; i>=0; i--)
+        {
+            source[i]=getSource(source[i+1], operations[i], num_cards);
+        }
+        //printf("The source for %lld comes from %lld\n", prior, source[0]);
+        if (source[0]==target_position)
+            break;
+        prior=source[0];
+        repeat_counter++;
     }
     
-    printf("The source for %lld comes from %lld\n", target_position, source[0]);
-            
+    printf("Repeats to 2020 after %lld elements\n", repeat_counter);
+    
     return 0;
 }
