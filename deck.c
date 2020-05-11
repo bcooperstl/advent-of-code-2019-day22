@@ -9,6 +9,15 @@ void copy(int * to, int * from, int num_cards)
         to[i]=from[i];
 }
 
+void combined_equation(int * to, int * from, int a, int b, int num_cards)
+{
+    for (int i=0; i<num_cards; i++)
+    {
+        int dest=((a*i)+b+num_cards)%num_cards;
+        to[dest]=from[i];
+    }
+}
+
 void deal_new_stack(int * to, int * from, int num_cards)
 {
     for (int i=0; i<num_cards; i++)
