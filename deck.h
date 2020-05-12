@@ -17,8 +17,8 @@ struct operation{
     int op;
     int num;
     // a and b for f(x)=ax+b mod m
-    int a;
-    int b;  
+    long long int a;
+    long long int b;  
 };
 
 typedef struct operation operation;
