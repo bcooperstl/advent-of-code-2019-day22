@@ -10,18 +10,32 @@
 #define ONE 1ll // 1 as a long long
 #define TWO 2ll // 2 as a long long
 #define TEN 10ll // 10 as a long long
+#define MINUS_ONE -1ll // -1 as long long.
 
 // getting around 64 bit overflow in modular multiplication
-// TODO: Add handling for negative numbers
 long long int multiplication_by_stupidity(long long int a, long long int b, long long int modulo)
 {
+    long long int sign=ONE;
+    long long int copy_a=a;
     long long int copy_b=b;
     long long int result=0;
     int power=0;
+    
+    if (copy_a < 0)
+    {
+        sign=sign*MINUS_ONE;
+        copy_a=copy_a*MINUS_ONE; // make copy_a positive
+    }
+    if (copy_b < 0)
+    {
+        sign=sign*MINUS_ONE;
+        copy_b=copy_b*MINUS_ONE; // make copy_b positive
+    }
+    
     while (copy_b > 0)
     {
         long long int val=copy_b%TEN;
-        long long int intermed=(a*val)%modulo;
+        long long int intermed=(copy_a*val)%modulo;
         for (int i=0; i<power; i++)
         {
             intermed=(intermed*10)%modulo;
@@ -31,7 +45,11 @@ long long int multiplication_by_stupidity(long long int a, long long int b, long
         copy_b/=TEN; // divide 
         power++;
     }
-    printf("%lld*%lld mod %lld is %lld\n", a, b, modulo, result);
+    
+    // flip the sign on the result if needed
+    result=((result*sign)+modulo)%modulo;
+    
+    //printf("%lld*%lld mod %lld is %lld\n", a, b, modulo, result);
     return result;
 }
 
@@ -49,8 +67,8 @@ long long int exponent_by_squaring(long long int base, long long int power, long
 
 long long int modulo_mult_inverse(long long int base, long long int modulo)
 {
-    
-    
+    // my modulo is prime, so i can use a^(m-2)==a^-1 mod m
+    return exponent_by_squaring(base, modulo-TWO, modulo);
 }
 
 int main (int argc, char * argv[])
@@ -143,10 +161,19 @@ int main (int argc, char * argv[])
     printf("But we need to run this equation %lld times\n", num_deals);
     
     long long int geometric_A=exponent_by_squaring(final_A, num_deals, num_cards);
-    logn long int geometric_B=multiplication_by_stupidity(multiplication_by_stupidity(final_B, (ONE-geometric_A), module), modulo_mult_inverse(ONE-final_A, modulo), module); // geometric_A equals final_A to the k, so resuing it instead of recalculating it
-    printf("geometric_A is %lld\n", geometric_A);
+    long long int geometric_B=multiplication_by_stupidity(multiplication_by_stupidity(final_B, (ONE-geometric_A), num_cards), modulo_mult_inverse(ONE-final_A, num_cards), num_cards); // geometric_A equals final_A to the k, so resuing it instead of recalculating it
+    //printf("geometric_A is %lld\n", geometric_A);
+    //printf("geometric_B is %lld\n", geometric_B);
     
-    printf("Adjusting B to set result to 1: %lld*x+%lld mod %lld = %lld\n", final_A, final_B, num_cards, ONE);
-
+    printf("That results in the equation %lld*x+%lld mod %lld\n", geometric_A, geometric_B, num_cards);
+    
+    printf("But we need to invert that equation since we know the answer we want, but not the starting value\n");
+    
+    long long int inverse_A=modulo_mult_inverse(geometric_A, num_cards);
+    
+    long long int actual_result=multiplication_by_stupidity(target_position-geometric_B, inverse_A, num_cards);
+    
+    printf("By some miracle, the result is %lld\n", actual_result);
+    
     return 0;
 }
